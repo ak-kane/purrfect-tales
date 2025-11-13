@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        comic: ['Bangers', 'cursive'],
+        body: ['Comic Neue', 'cursive'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,6 +61,19 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        comic: {
+          panel: "hsl(var(--comic-panel))",
+          border: "hsl(var(--comic-border))",
+          shadow: "hsl(var(--comic-shadow))",
+        },
+      },
+      backgroundImage: {
+        'gradient-hero': 'var(--gradient-hero)',
+        'gradient-card': 'var(--gradient-card)',
+      },
+      boxShadow: {
+        'comic': 'var(--shadow-comic)',
+        'comic-hover': 'var(--shadow-comic-hover)',
       },
       borderRadius: {
         lg: "var(--radius)",
