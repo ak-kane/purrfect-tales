@@ -111,9 +111,60 @@ Keep each panel text under 100 characters. Make it funny and engaging!`
       throw new Error('Failed to parse story data');
     }
 
+    // Generate comic panel images for each scene
+    console.log('Generating comic panel images...');
+    const panelImages: string[] = [];
+    
+    for (let i = 0; i < storyData.panels.length; i++) {
+      const panel = storyData.panels[i];
+      console.log(`Generating image for panel ${i + 1}: ${panel.text}`);
+      
+      const imageResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash-image',
+          messages: [
+            {
+              role: 'user',
+              content: `Create a comic book style illustration for this scene: "${panel.text}". 
+              Style: Vibrant cartoon comic book art, bold outlines, expressive, fun and whimsical. 
+              The scene should feature a cat as the main character. Make it look like a professional comic panel.
+              Use bright colors and dynamic composition.`
+            }
+          ],
+          modalities: ['image', 'text']
+        }),
+      });
+
+      if (!imageResponse.ok) {
+        console.error(`Failed to generate image for panel ${i + 1}`);
+        throw new Error(`Failed to generate panel image ${i + 1}`);
+      }
+
+      const imageData = await imageResponse.json();
+      const generatedImage = imageData.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+      
+      if (!generatedImage) {
+        throw new Error(`No image generated for panel ${i + 1}`);
+      }
+      
+      panelImages.push(generatedImage);
+      console.log(`Panel ${i + 1} image generated successfully`);
+    }
+
     return new Response(
       JSON.stringify({ 
-        story: storyData,
+        story: {
+          ...storyData,
+          panels: storyData.panels.map((panel: any, index: number) => ({
+            ...panel,
+            image: panelImages[index]
+          }))
+        },
         scenario: scenario 
       }),
       { 

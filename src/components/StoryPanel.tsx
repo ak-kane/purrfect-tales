@@ -1,6 +1,6 @@
 interface StoryPanelProps {
   title: string;
-  panels: Array<{ text: string }>;
+  panels: Array<{ text: string; image?: string }>;
 }
 
 export const StoryPanel = ({ title, panels }: StoryPanelProps) => {
@@ -17,20 +17,39 @@ export const StoryPanel = ({ title, panels }: StoryPanelProps) => {
         {panels.map((panel, index) => (
           <div
             key={index}
-            className="bg-comic-panel border-4 border-comic-border rounded-2xl p-6 shadow-comic hover:shadow-comic-hover transition-all transform hover:-translate-y-1 bg-gradient-card"
+            className="bg-comic-panel border-4 border-comic-border rounded-2xl overflow-hidden shadow-comic hover:shadow-comic-hover transition-all transform hover:-translate-y-1"
             style={{
               animationDelay: `${index * 200}ms`,
             }}
           >
-            <div className="space-y-4">
-              <div className="w-12 h-12 bg-gradient-hero rounded-full flex items-center justify-center shadow-comic mx-auto">
-                <span className="text-2xl font-comic text-primary-foreground">
-                  {index + 1}
-                </span>
+            <div className="space-y-0">
+              <div className="relative aspect-square">
+                {panel.image ? (
+                  <img 
+                    src={panel.image} 
+                    alt={`Panel ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-card flex items-center justify-center">
+                    <div className="w-16 h-16 bg-gradient-hero rounded-full flex items-center justify-center shadow-comic">
+                      <span className="text-3xl font-comic text-primary-foreground">
+                        {index + 1}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                <div className="absolute top-3 left-3 w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-comic border-2 border-comic-border">
+                  <span className="text-xl font-comic text-primary-foreground">
+                    {index + 1}
+                  </span>
+                </div>
               </div>
-              <p className="text-center font-body text-lg text-foreground leading-relaxed min-h-[100px] flex items-center justify-center">
-                {panel.text}
-              </p>
+              <div className="p-4 bg-gradient-card">
+                <p className="text-center font-body text-base text-foreground leading-relaxed">
+                  {panel.text}
+                </p>
+              </div>
             </div>
           </div>
         ))}

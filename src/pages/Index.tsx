@@ -8,7 +8,7 @@ import { Sparkles } from "lucide-react";
 
 interface Story {
   title: string;
-  panels: Array<{ text: string }>;
+  panels: Array<{ text: string; image?: string }>;
 }
 
 const Index = () => {
