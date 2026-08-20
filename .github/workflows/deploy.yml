@@ -1,0 +1,60 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Deploy on every push to the default branch
+  push:
+    branches: [main]
+  # Allow running the workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Permissions required by the GitHub Pages deploy actions
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only run one Pages deployment at a time; don't cancel an in-progress one
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        # Base path must match the repo name for a project Pages site:
+        # https://ak-kane.github.io/purrfect-tales/
+        run: npm run build -- --base=/purrfect-tales/
+
+      - name: Add SPA fallback
+        # BrowserRouter needs a 404.html so deep links / refreshes resolve
+        run: cp dist/index.html dist/404.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
